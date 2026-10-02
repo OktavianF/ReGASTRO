@@ -47,6 +47,7 @@ dependencies:
   uuid: ^4.4.0
   dartz: ^0.10.1
   equatable: ^2.1.0
+  wakelock_plus: ^1.5.2
 
 dev_dependencies:
   flutter_test:

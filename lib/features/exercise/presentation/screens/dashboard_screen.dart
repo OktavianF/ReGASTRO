@@ -12,13 +12,11 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Katalog Latihan'),
+        title: const Text('ReGASTRO — Katalog Latihan'),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
-            onPressed: () {
-              // Navigasi ke profil
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -46,9 +44,14 @@ class DashboardScreen extends ConsumerWidget {
                     itemCount: exerciseState.exercises.length,
                     itemBuilder: (context, index) {
                       final exercise = exerciseState.exercises[index];
+                      final isSagittal = exercise.cameraOrientation == 'sagittal';
+
                       return Card(
                         margin: const EdgeInsets.only(bottom: 16),
                         elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(12),
                           onTap: () {
@@ -64,13 +67,17 @@ class DashboardScreen extends ConsumerWidget {
                             child: Row(
                               children: [
                                 Container(
-                                  width: 80,
-                                  height: 80,
+                                  width: 72,
+                                  height: 72,
                                   decoration: BoxDecoration(
                                     color: Colors.blue.shade50,
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: const Icon(Icons.fitness_center, size: 40, color: Colors.blue),
+                                  child: Icon(
+                                    isSagittal ? Icons.airline_seat_recline_normal : Icons.person,
+                                    size: 36,
+                                    color: Colors.blue.shade700,
+                                  ),
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
@@ -80,15 +87,35 @@ class DashboardScreen extends ConsumerWidget {
                                       Text(
                                         exercise.title,
                                         style: const TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      const SizedBox(height: 8),
+                                      const SizedBox(height: 4),
                                       Text(
-                                        '${exercise.defaultSets} Set x ${exercise.defaultRepetitions} Repetisi',
+                                        '${exercise.defaultSets} Set × ${exercise.defaultRepetitions} Repetisi',
                                         style: TextStyle(
-                                          color: Colors.grey.shade600,
+                                          color: Colors.grey.shade700,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: isSagittal ? Colors.orange.shade50 : Colors.teal.shade50,
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(
+                                            color: isSagittal ? Colors.orange.shade200 : Colors.teal.shade200,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          isSagittal ? '📷 Kamera Menyamping' : '📷 Kamera Menghadap',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                            color: isSagittal ? Colors.orange.shade900 : Colors.teal.shade900,
+                                          ),
                                         ),
                                       ),
                                     ],

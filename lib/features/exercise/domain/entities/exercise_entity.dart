@@ -4,23 +4,25 @@ class ExerciseEntity extends Equatable {
   final String id;
   final String title;
   final String description;
-  final String imageUrl; // Can be a local asset path or network URL
+  final String exerciseType;
+  final String imageUrl;
   final int defaultRepetitions;
   final int defaultSets;
+  final int restSeconds;
+  final String cameraOrientation; // 'sagittal' or 'frontal'
   final List<String> instructions;
-  final double targetRomMin; // Target Range of Motion Min
-  final double targetRomMax; // Target Range of Motion Max
 
   const ExerciseEntity({
     required this.id,
     required this.title,
     required this.description,
+    required this.exerciseType,
     required this.imageUrl,
     required this.defaultRepetitions,
     required this.defaultSets,
+    required this.restSeconds,
+    required this.cameraOrientation,
     required this.instructions,
-    required this.targetRomMin,
-    required this.targetRomMax,
   });
 
   @override
@@ -28,11 +30,13 @@ class ExerciseEntity extends Equatable {
         id,
         title,
         description,
+        exerciseType,
         imageUrl,
         defaultRepetitions,
         defaultSets,
+        restSeconds,
+        cameraOrientation,
         instructions,
-        targetRomMin,
-        targetRomMax,
       ];
 }
+

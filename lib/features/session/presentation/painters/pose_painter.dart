@@ -5,11 +5,51 @@ class PosePainter extends CustomPainter {
   final List<Pose> poses;
   final Size absoluteImageSize;
   final InputImageRotation rotation;
+  final double? thresholdLineY;
+  final double? thresholdLineX;
+  final bool targetReached;
 
-  PosePainter(this.poses, this.absoluteImageSize, this.rotation);
+  PosePainter(
+    this.poses,
+    this.absoluteImageSize,
+    this.rotation, {
+    this.thresholdLineY,
+    this.thresholdLineX,
+    this.targetReached = false,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
+    // 1. Draw threshold line if available
+    if (thresholdLineY != null) {
+      final lineY = translateY(thresholdLineY!, size, absoluteImageSize, rotation);
+      final linePaint = Paint()
+        ..color = targetReached ? Colors.greenAccent : Colors.cyanAccent
+        ..strokeWidth = 4.0
+        ..style = PaintingStyle.stroke;
+
+      canvas.drawLine(
+        Offset(0, lineY),
+        Offset(size.width, lineY),
+        linePaint,
+      );
+    }
+
+    if (thresholdLineX != null) {
+      final lineX = translateX(thresholdLineX!, size, absoluteImageSize, rotation);
+      final linePaint = Paint()
+        ..color = targetReached ? Colors.greenAccent : Colors.cyanAccent
+        ..strokeWidth = 4.0
+        ..style = PaintingStyle.stroke;
+
+      canvas.drawLine(
+        Offset(lineX, 0),
+        Offset(lineX, size.height),
+        linePaint,
+      );
+    }
+
+    // 2. Draw Skeleton
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0
@@ -28,27 +68,31 @@ class PosePainter extends CustomPainter {
     for (final pose in poses) {
       pose.landmarks.forEach((_, landmark) {
         canvas.drawCircle(
-            Offset(
-              translateX(landmark.x, size, absoluteImageSize, rotation),
-              translateY(landmark.y, size, absoluteImageSize, rotation),
-            ),
-            5,
-            paint);
+          Offset(
+            translateX(landmark.x, size, absoluteImageSize, rotation),
+            translateY(landmark.y, size, absoluteImageSize, rotation),
+          ),
+          5,
+          paint,
+        );
       });
 
       void paintLine(PoseLandmarkType type1, PoseLandmarkType type2, Paint paintType) {
-        final PoseLandmark joint1 = pose.landmarks[type1]!;
-        final PoseLandmark joint2 = pose.landmarks[type2]!;
+        final PoseLandmark? joint1 = pose.landmarks[type1];
+        final PoseLandmark? joint2 = pose.landmarks[type2];
+        if (joint1 == null || joint2 == null) return;
+
         canvas.drawLine(
-            Offset(
-              translateX(joint1.x, size, absoluteImageSize, rotation),
-              translateY(joint1.y, size, absoluteImageSize, rotation),
-            ),
-            Offset(
-              translateX(joint2.x, size, absoluteImageSize, rotation),
-              translateY(joint2.y, size, absoluteImageSize, rotation),
-            ),
-            paintType);
+          Offset(
+            translateX(joint1.x, size, absoluteImageSize, rotation),
+            translateY(joint1.y, size, absoluteImageSize, rotation),
+          ),
+          Offset(
+            translateX(joint2.x, size, absoluteImageSize, rotation),
+            translateY(joint2.y, size, absoluteImageSize, rotation),
+          ),
+          paintType,
+        );
       }
 
       // Draw arms
@@ -74,7 +118,10 @@ class PosePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant PosePainter oldDelegate) {
     return oldDelegate.absoluteImageSize != absoluteImageSize ||
-        oldDelegate.poses != poses;
+        oldDelegate.poses != poses ||
+        oldDelegate.thresholdLineY != thresholdLineY ||
+        oldDelegate.thresholdLineX != thresholdLineX ||
+        oldDelegate.targetReached != targetReached;
   }
 
   double translateX(double x, Size canvasSize, Size imageSize, InputImageRotation rotation) {

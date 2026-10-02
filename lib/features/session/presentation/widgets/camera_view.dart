@@ -50,7 +50,7 @@ class _CameraViewState extends State<CameraView> {
     final camera = _cameras[_cameraIndex];
     _controller = CameraController(
       camera,
-      ResolutionPreset.low,
+      ResolutionPreset.high,
       enableAudio: false,
       imageFormatGroup: Platform.isAndroid
           ? ImageFormatGroup.nv21
@@ -102,16 +102,13 @@ class _CameraViewState extends State<CameraView> {
       return const Center(child: CircularProgressIndicator());
     }
     
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          CameraPreview(_controller!),
-          if (widget.customPaint != null) widget.customPaint!,
-        ],
+      body: Center(
+        child: CameraPreview(
+          _controller!,
+          child: widget.customPaint,
+        ),
       ),
     );
   }
